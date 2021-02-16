@@ -10,6 +10,8 @@ import (
 	"unicode"
 	"unicode/utf8"
 	"unsafe"
+
+	"github.com/google/uuid"
 )
 
 // mysqlInterpolate parses query and replace all "?" with encoded args.
@@ -344,6 +346,10 @@ func encodeValue(buf []byte, arg interface{}, flavor Flavor) ([]byte, error) {
 
 	case string:
 		buf = quoteStringValue(buf, v, flavor)
+
+	case uuid.UUID:
+		buf = append(buf, []byte("\""+v.String()+"\"")...)
+		break
 
 	case time.Time:
 		if v.IsZero() {
